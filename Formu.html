@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Multi-página</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .step {
+            display: none;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .active {
+            display: block;
+        }
+        .form-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .add-entry {
+            margin-top: 10px;
+        }
+        .entry-group {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .remove-entry {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Formulario de Registro</h1>
+    
+    <!-- Página 1: Datos Personales -->
+    <div id="step1" class="step active">
+        <h2>Página 1: Datos Personales</h2>
+        <div class="form-group">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" required>
+            <span class="error" id="errorNombre">Campo requerido</span>
+        </div>
+        <div class="form-group">
+            <label for="edad">Edad:</label>
+            <input type="number" id="edad" min="0" required>
+            <span class="error" id="errorEdad">Campo requerido</span>
+        </div>
+        <div class="form-group">
+            <label for="sexo">Sexo:</label>
+            <select id="sexo" required>
+                <option value="">Seleccionar</option>
+                <option value="masculino">Masculino</option>
+                <option value="femenino">Femenino</option>
+                <option value="otro">Otro</option>
+            </select>
+            <span class="error" id="errorSexo">Campo requerido</span>
+        </div>
+        <div class="form-actions">
+            <button onclick="nextStep(1)">Siguiente</button>
+        </div>
+    </div>
+
+    <!-- Página 2: Familiares -->
+    <div id="step2" class="step">
+        <h2>Página 2: Familiares</h2>
+        <div id="familiaresContainer">
+            <div class="entry-group">
+                <div>
+                    <label>Nombre:</label>
+                    <input type="text" class="familiarNombre" required>
+                </div>
+                <div>
+                    <label>Parentesco:</label>
+                    <input type="text" class="familiarParentesco" required>
+                </div>
+                <div>
+                    <label>Edad:</label>
+                    <input type="number" class="familiarEdad" min="0" required>
+                </div>
+                <button class="remove-entry" onclick="removeEntry(this)">Eliminar</button>
+            </div>
+        </div>
+        <button class="add-entry" onclick="addFamiliar()">Agregar Familiar</button>
+        <div class="form-actions">
+            <button onclick="prevStep()">Anterior</button>
+            <button onclick="nextStep(2)">Siguiente</button>
+        </div>
+    </div>
+
+    <!-- Página 3: Condiciones Pre-Existentes -->
+    <div id="step3" class="step">
+        <h2>Página 3: Condiciones Pre-Existentes</h2>
+        <div id="condicionesContainer">
+            <div class="entry-group">
+                <div>
+                    <label>Enfermedad:</label>
+                    <input type="text" class="condicionEnfermedad" required>
+                </div>
+                <div>
+                    <label>Tiempo con la enfermedad (años):</label>
+                    <input type="number" class="condicionTiempo" min="0" required>
+                </div>
+                <button class="remove-entry" onclick="removeEntry(this)">Eliminar</button>
+            </div>
+        </div>
+        <button class="add-entry" onclick="addCondicion()">Agregar Condición</button>
+        <div class="form-actions">
+            <button onclick="prevStep()">Anterior</button>
+            <button onclick="nextStep(3)">Siguiente</button>
+        </div>
+    </div>
+
+    <!-- Página 4: Internamientos -->
+    <div id="step4" class="step">
+        <h2>Página 4: Internamientos Realizados</h2>
+        <div id="internamientosContainer">
+            <div class="entry-group">
+                <div>
+                    <label>Fecha:</label>
+                    <input type="date" class="internamientoFecha" required>
+                </div>
+                <div>
+                    <label>Centro Médico:</label>
+                    <input type="text" class="internamientoCentro" required>
+                </div>
+                <div>
+                    <label>Diagnóstico:</label>
+                    <input type="text" class="internamientoDiagnostico" required>
+                </div>
+                <button class="remove-entry" onclick="removeEntry(this)">Eliminar</button>
+            </div>
+        </div>
+        <button class="add-entry" onclick="addInternamiento()">Agregar Internamiento</button>
+        <div class="form-actions">
+            <button onclick="prevStep()">Anterior</button>
+            <button onclick="nextStep(4)">Siguiente</button>
+        </div>
+    </div>
+
+    <!-- Página 5: Resumen -->
+    <div id="step5" class="step">
+        <h2>Página 5: Resumen de los Datos Registrados</h2>
+        <div id="resumen"></div>
+        <div class="form-actions">
+            <button onclick="prevStep()">Anterior</button>
+            <button onclick="guardar()">Guardar</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const formData = {
+            persona: {},
+            familiares: [],
+            condiciones: [],
+            internamientos: []
+        };
+
+        function nextStep(step) {
+            if (!validateStep(step)) return;
+            
+            document.getElementById(`step${step}`).classList.remove('active');
+            currentStep = step + 1;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+        }
+
+        function prevStep() {
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            currentStep--;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+        }
+
+        function validateStep(step) {
+            let isValid = true;
+            
+            switch(step) {
+                case 1:
+                    if (!document.getElementById('nombre').value) {
+                        document.getElementById('errorNombre').style.display = 'block';
+                        isValid = false;
+                    } else {
+                        document.getElementById('errorNombre').style.display = 'none';
+                    }
+                    
+                    if (!document.getElementById('edad').value) {
+                        document.getElementById('errorEdad').style.display = 'block';
+                        isValid = false;
+                    } else {
+                        document.getElementById('errorEdad').style.display = 'none';
+                    }
+                    
+                    if (!document.getElementById('sexo').value) {
+                        document.getElementById('errorSexo').style.display = 'block';
+                        isValid = false;
+                    } else {
+                        document.getElementById('errorSexo').style.display = 'none';
+                    }
+                    
+                    if (isValid) {
+                        saveStep1();
+                    }
+                    break;
+                case 2:
+                    saveStep2();
+                    break;
+                case 3:
+                    saveStep3();
+                    break;
+                case 4:
+                    saveStep4();
+                    break;
+            }
+            
+            return isValid;
+        }
+
+        function saveStep1() {
+            formData.persona = {
+                nombre: document.getElementById('nombre').value,
+                edad: document.getElementById('edad').value,
+                sexo: document.getElementById('sexo').value
+            };
+        }
+
+        function saveStep2() {
+            const familiares = [];
+            document.querySelectorAll('#familiaresContainer .entry-group').forEach((group, index) => {
+                const nombre = group.querySelector('.familiarNombre').value;
+                const parentesco = group.querySelector('.familiarParentesco').value;
+                const edad = group.querySelector('.familiarEdad').value;
+                
+                if (nombre && parentesco && edad) {
+                    familiares.push({
+                        nombre,
+                        parentesco,
+                        edad: parseInt(edad)
+                    });
+                }
+            });
+            formData.familiares = familiares;
+        }
+
+        function saveStep3() {
+            const condiciones = [];
+            document.querySelectorAll('#condicionesContainer .entry-group').forEach((group, index) => {
+                const enfermedad = group.querySelector('.condicionEnfermedad').value;
+                const tiempo = group.querySelector('.condicionTiempo').value;
+                
+                if (enfermedad && tiempo) {
+                    condiciones.push({
+                        enfermedad,
+                        tiempo: parseInt(tiempo)
+                    });
+                }
+            });
+            formData.condiciones = condiciones;
+        }
+
+        function saveStep4() {
+            const internamientos = [];
+            document.querySelectorAll('#internamientosContainer .entry-group').forEach((group, index) => {
+                const fecha = group.querySelector('.internamientoFecha').value;
+                const centro = group.querySelector('.internamientoCentro').value;
+                const diagnostico = group.querySelector('.internamientoDiagnostico').value;
+                
+                if (fecha && centro && diagnostico) {
+                    internamientos.push({
+                        fecha,
+                        centro,
+                        diagnostico
+                    });
+                }
+            });
+            formData.internamientos = internamientos;
+        }
+
+        function addFamiliar() {
+            const container = document.getElementById('familiaresContainer');
+            const newGroup = document.createElement('div');
+            newGroup.className = 'entry-group';
+            newGroup.innerHTML = `
+                <div>
+                    <label>Nombre:</label>
+                    <input type="text" class="familiarNombre" required>
+                </div>
+                <div>
+                    <label>Parentesco:</label>
+                    <input type="text" class="familiarParentesco" required>
+                </div>
+                <div>
+                    <label>Edad:</label>
+                    <input type="number" class="familiarEdad" min="0" required>
+                </div>
+                <button class="remove-entry" onclick="removeEntry(this)">Eliminar</button>
+            `;
+            container.appendChild(newGroup);
+        }
+
+        function addCondicion() {
+            const container = document.getElementById('condicionesContainer');
+            const newGroup = document.createElement('div');
+            newGroup.className = 'entry-group';
+            newGroup.innerHTML = `
+                <div>
+                    <label>Enfermedad:</label>
+                    <input type="text" class="condicionEnfermedad" required>
+                </div>
+                <div>
+                    <label>Tiempo con la enfermedad (años):</label>
+                    <input type="number" class="condicionTiempo" min="0" required>
+                </div>
+                <button class="remove-entry" onclick="removeEntry(this)">Eliminar</button>
+            `;
+            container.appendChild(newGroup);
+        }
+
+        function addInternamiento() {
+            const container = document.getElementById('internamientosContainer');
+            const newGroup = document.createElement('div');
+            newGroup.className = 'entry-group';
+            newGroup.innerHTML = `
+                <div>
+                    <label>Fecha:</label>
+                    <input type="date" class="internamientoFecha" required>
+                </div>
+                <div>
+                    <label>Centro Médico:</label>
+                    <input type="text" class="internamientoCentro" required>
+                </div>
+                <div>
+                    <label>Diagnóstico:</label>
+                    <input type="text" class="internamientoDiagnostico" required>
+                </div>
+                <button class="remove-entry" onclick="removeEntry(this)">Eliminar</button>
+            `;
+            container.appendChild(newGroup);
+        }
+
+        function removeEntry(button) {
+            const group = button.parentElement;
+            group.remove();
+        }
+
+        function guardar() {
+            saveStep4(); // Guardar últimos datos
+            localStorage.setItem('formData', JSON.stringify(formData));
+            alert('Datos guardados correctamente!');
+        }
+
+        function cargarDatos() {
+            const savedData = localStorage.getItem('formData');
+            if (savedData) {
+                formData = JSON.parse(savedData);
+                
+                // Cargar datos en los campos
+                document.getElementById('nombre').value = formData.persona.nombre || '';
+                document.getElementById('edad').value = formData.persona.edad || '';
+                document.getElementById('sexo').value = formData.persona.sexo || '';
+                
+                // Cargar familiares
+                formData.familiares.forEach(familiar => {
+                    addFamiliar();
+                    const groups = document.querySelectorAll('#familiaresContainer .entry-group');
+                    const lastGroup = groups[groups.length - 1];
+                    lastGroup.querySelector('.familiarNombre').value = familiar.nombre;
+                    lastGroup.querySelector('.familiarParentesco').value = familiar.parentesco;
+                    lastGroup.querySelector('.familiarEdad').value = familiar.edad;
+                });
+                
+                // Cargar condiciones
+                formData.condiciones.forEach(condicion => {
+                    addCondicion();
+                    const groups = document.querySelectorAll('#condicionesContainer .entry-group');
+                    const lastGroup = groups[groups.length - 1];
+                    lastGroup.querySelector('.condicionEnfermedad').value = condicion.enfermedad;
+                    lastGroup.querySelector('.condicionTiempo').value = condicion.tiempo;
+                });
+                
+                // Cargar internamientos
+                formData.internamientos.forEach(internamiento => {
+                    addInternamiento();
+                    const groups = document.querySelectorAll('#internamientosContainer .entry-group');
+                    const lastGroup = groups[groups.length - 1];
+                    lastGroup.querySelector('.internamientoFecha').value = internamiento.fecha;
+                    lastGroup.querySelector('.internamientoCentro').value = internamiento.centro;
+                    lastGroup.querySelector('.internamientoDiagnostico').value = internamiento.diagnostico;
+                });
+                
+                // Mostrar resumen
+                mostrarResumen();
+            }
+        }
+
+        function mostrarResumen() {
+            const resumenDiv = document.getElementById('resumen');
+            resumenDiv.innerHTML = `
+                <h3>Datos Personales:</h3>
+                <p>Nombre: ${formData.persona.nombre}</p>
+                <p>Edad: ${formData.persona.edad}</p>
+                <p>Sexo: ${formData.persona.sexo}</p>
+                
+                <h3>Familiares:</h3>
+                <ul>
+                    ${formData.familiares.map(f => `
+                        <li>${f.nombre} (${f.parentesco}, ${f.edad} años)</li>
+                    `).join('')}
+                </ul>
+                
+                <h3>Condiciones Pre-Existentes:</h3>
+                <ul>
+                    ${formData.condiciones.map(c => `
+                        <li>${c.enfermedad} (${c.tiempo} años)</li>
+                    `).join('')}
+                </ul>
+                
+                <h3>Internamientos:</h3>
+                <ul>
+                    ${formData.internamientos.map(i => `
+                        <li>${i.fecha} - ${i.centro}: ${i.diagnostico}</li>
+                    `).join('')}
+                </ul>
+            `;
+        }
+
+        // Cargar datos guardados al inicio
+        window.onload = cargarDatos;
+    </script>
+</body>
+</html>
